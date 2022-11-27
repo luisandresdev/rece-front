@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "v-calendar": "^3.0.0-alpha.8",
     "vue": "^3.2.41",
     "vue-router": "^4.1.6"
   },
