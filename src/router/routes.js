@@ -1,4 +1,5 @@
 const routes = [
+    // auth
     {
         path: "/",
         redirect: { name: "login" },
@@ -17,6 +18,22 @@ const routes = [
         path: '/auth/recover-password',
         name: 'recover_password',
         component: () => import('../pages/auth/recover_password.vue'),
+    },
+    // profile
+    {
+        path: "/profile",
+        name: "profile",
+        component: () => import("../pages/profile/index.vue"),
+    },
+    {
+        path: "/profile/edit",
+        name: "profile-edit",
+        component: () => import("../pages/profile/edit.vue"),
+    },
+    {
+        path: "/profile/change-password",
+        name: "profile-change-password",
+        component: () => import("../pages/profile/changePassword.vue"),
     },
 ];
 
