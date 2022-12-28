@@ -8,6 +8,6 @@
 </script>
 <style lang='scss' scoped>
 .action-buttons {
-    margin: 1rem 1rem 0rem 1rem;
+    margin: 1rem;
 }
 </style>
