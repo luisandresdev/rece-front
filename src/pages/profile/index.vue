@@ -24,8 +24,8 @@
         />
       </van-cell-group>
       <van-cell-group title="Administrar" inset>
-        <van-cell title="Categorías" is-link to="index" icon="orders-o" />
-        <van-cell title="Etiquetas" is-link to="index" icon="calendar-o" />
+        <van-cell title="Categorías" is-link to="/categories" icon="orders-o" />
+        <van-cell title="Etiquetas" is-link to="/tags" icon="calendar-o" />
       </van-cell-group>
     </layout>
   </template>
