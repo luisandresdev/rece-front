@@ -35,6 +35,18 @@ const routes = [
         name: "profile-change-password",
         component: () => import("../pages/profile/changePassword.vue"),
     },
+    //categories
+    {
+        path: "/categories",
+        name: "categories",
+        component: () => import("../pages/categories/index.vue"),
+    },
+    // etiquetas
+    {
+        path: "/tags",
+        name: "tags",
+        component: () => import("../pages/tags/index.vue"),
+    },
 ];
 
 export default routes;
