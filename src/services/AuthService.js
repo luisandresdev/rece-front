@@ -5,8 +5,6 @@ const AuthService = {
 
     token_type: null,
     access_token: null,
-    expires_at: null,
-    intended: null,
 
     async login(data) {
         this.clearParams();
@@ -17,6 +15,21 @@ const AuthService = {
             })
     },
 
+    async register(data) {
+        return  ApiService.post('/api/register', data);
+    },
+
+   async logout() {
+        try {
+            try {
+                return await ApiService.delete('/api/logout');
+            } catch (err) {
+                return err;
+            }
+        } finally {
+            this.clearParams();
+        }
+    },
     // async refresh() {
     //     const credentials = {
     //         grant_type: 'refresh_token',
@@ -28,7 +41,7 @@ const AuthService = {
     //     return ApiService.post('/oauth/token/refresh', credentials)
     //         .then(res => {
     //             return res;
-                
+
     //         }).catch((_e) => {
     //             this.clearParams()
     //         });
@@ -69,15 +82,12 @@ const AuthService = {
         localStorage.removeItem('token');
         this.token_type = null;
         this.access_token = null;
-        this.refresh_token = null;
-        this.expires_in = 0;
         ApiService.clearCredentials();
     },
 
     setParams(data) {
-        this.token_type = data.type;
+        this.token_type = data.token_type;
         this.access_token = data.access_token;
-        this.expires_at = data.expires_at;
         ApiService.setCredentials('Bearer', data.access_token);
         this.storeParams();
     },
@@ -86,13 +96,12 @@ const AuthService = {
         return {
             token_type: this.token_type,
             access_token: this.access_token,
-            expires_at: this.expires_at,
         }
     },
 
     storeParams() {
         const params = this.getParams();
-        localStorage.setItem('token', 
+        localStorage.setItem('token',
             this.crypt(JSON.stringify(params), 'token'));
     },
 
