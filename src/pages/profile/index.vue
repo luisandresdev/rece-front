@@ -1,10 +1,10 @@
 <template lang="">
     <layout :title="'Perfil'">
         <van-card
-    :title="'Luis Andrés Bolaños Yapo'"
-    :desc="'luisandres33bolanos@gmail.com'"
-    thumb="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
-  >
+          :title="name"
+          :desc="email"
+          thumb="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
+        >     
     <template #footer>
       <van-button icon="close" round size="mini" type="danger" @click="logout">Cerrar sesión</van-button>
     </template>
@@ -32,10 +32,30 @@
 <script setup>
 //imports
 import layout from "./layout.vue";
+import { onMounted, ref } from "vue";
+import ProfileService from "../../services/ProfileService";
+import AuthService from "../../services/AuthService";
+
+// data
+const name = ref('');
+const email = ref('');
+
+onMounted(() => {
+  profile();
+})
+
 
 // Métodos
+const profile = () => {
+  ProfileService.profile().then(response => {
+    name.value = response.data.data.name;
+    email.value = response.data.data.email;
+  }).catch(error => {
+    console.log(error);
+  })
+}
 const logout = () => {
-
+  AuthService.logout();
 }
 
 </script>

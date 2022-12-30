@@ -26,12 +26,15 @@
                 </div>
             </div>
         </form-container>
+        <van-toast v-model:show="show" style="padding: 0"></van-toast>
     </layout>
 </template>
 <script setup>
 import layout from './layout.vue';
 import Form from '../../classes/Form';
-import { reactive, ref } from 'vue';
+import ProfileService from '../../services/ProfileService';
+import { onMounted, reactive, ref } from 'vue';
+import { showSuccessToast } from 'vant';
 // componentes
 import actionButtons from '../../container/actionButtons.vue';
 import buttonSubmit from '../../components/buttonSubmit.vue';
@@ -42,13 +45,29 @@ const form = reactive(new Form({
     name: "",
     email: "",
 }));
+const show = ref(false);
 
 const fileList = ref([]);
 
+onMounted(() => {
+    profile();
+})
 
 // methodos
 const onSubmit = () => {
+    ProfileService.profileEdit(form.data()).then(() => {
+        showSuccessToast('Perfil editado');
+    }).catch(error => {
+        console.log(error);
+    })
+}
 
+const profile = () => {
+    ProfileService.profile().then(response => {
+        form.set(response.data.data)
+    }).catch(error => {
+        console.log(error);
+    })
 }
 const afterRead = (file) => {
     console.log(file);
