@@ -5,14 +5,18 @@
                 <h1>Recetas</h1>
             </div>
             <div class="form-register">
-                <van-form @submit.prevent="onSubmit">
+                <van-form @submit.prevent="onSubmit" @keyup="form.clearErrors()">
                     <van-cell-group inset>
-                        <van-field v-model="form.name" type="text" name="name" label="Nombre" placeholder="Nombre" />
-                        <van-field v-model="form.email" type="email" name="email" label="Email" placeholder="Email" />
-                        <van-field v-model="form.password" type="password" name="password" label="Contraseña"
+                        <van-field v-model="form.name" type="text" name="name"
+                            :error-message="form.errorMessage('name')" label="Nombre" placeholder="Nombre" />
+                        <van-field v-model="form.email" type="email" name="email"
+                            :error-message="form.errorMessage('email')" label="Email" placeholder="Email" />
+                        <van-field v-model="form.password" type="password" name="password"
+                            :error-message="form.errorMessage('password')" label="Contraseña"
                             placeholder="Contraseña" />
                         <van-field v-model="form.password_confirmation" type="password" name="password"
-                            label="Confirmar contraseña" placeholder="Confirmar contraseña" />
+                            :error-message="form.errorMessage('password_confirmation')" label="Confirmar contraseña"
+                            placeholder="Confirmar contraseña" />
                     </van-cell-group>
                     <div class="action-buttons">
                         <div class="link-page-login" @click="pageLogin">
@@ -33,6 +37,7 @@
 <script setup>
 import { reactive } from 'vue';
 import Form from '../../classes/Form';
+import AuthService from '../../services/AuthService';
 
 // Composables
 import { usePush } from '../../composables/push.js';
@@ -52,8 +57,13 @@ const { redirectPush } = usePush();
 
 // Methods
 const onSubmit = () => {
-    console.log(form.data())
-
+    AuthService.register(form.data()).then(response => {
+        if (response.status == 200) {
+            redirectPush('login');
+        }
+    }).catch(error => {
+        form.setErrors(error.response.data.errors);
+    })
 };
 
 const pageLogin = () => {

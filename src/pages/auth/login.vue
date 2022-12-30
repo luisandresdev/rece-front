@@ -24,18 +24,24 @@
                 </van-form>
             </div>
         </section>
+        <van-notify v-model:show="showNotifyMessage" type="danger"></van-notify>
     </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import Form from '../../classes/Form';
-
+import AuthService from '../../services/AuthService';
+import { showNotify } from 'vant';
 // Composables
 import { usePush } from '../../composables/push.js';
 
 // Componentes
 import buttonSubmit from '../../components/buttonSubmit.vue';
+
+// data
+const showNotifyMessage = ref(false);
+
 
 // data
 const form = reactive(new Form({
@@ -47,8 +53,15 @@ const { redirectPush } = usePush();
 
 // Methods
 const onSubmit = () => {
-    console.log(form.data())
-
+    AuthService.login(form.data()).then(response => {
+        if (response.status == 200) {
+            redirectPush('profile');
+        }
+    }).catch(error => {
+        if (error.response.status == 401) {
+            showNotify({ type: 'danger', message: 'El email o contraseña son incorrectos' });
+        }
+    })
 };
 
 const pageRegister = () => {
