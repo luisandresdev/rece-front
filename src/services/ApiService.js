@@ -16,15 +16,15 @@ const ApiService = axios.create({
 ApiService.interceptors.request.use(
     (config) => {
         // config.headers.common["Content-type"] = "application/json; charset=utf-8" ;
-        config.headers.common["Access-Control-Allow-Origin"] = "*";
-        config.headers.common["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
-        config.headers.common["Access-Control-Allow-Headers"] = "Content-type";
-        config.headers.common["cache-control"] = "no-cache";
-        // config.headers["Content-type"] = "application/json; charset=utf-8" ;
-        // config.headers["Access-Control-Allow-Origin"] = "*";
-        // config.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
-        // config.headers["Access-Control-Allow-Headers"] = "Content-type";
-        // config.headers["cache-control"] = "no-cache";
+        // config.headers.common["Access-Control-Allow-Origin"] = "*";
+        // config.headers.common["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
+        // config.headers.common["Access-Control-Allow-Headers"] = "Content-type";
+        // config.headers.common["cache-control"] = "no-cache";
+        config.headers["Content-type"] = "application/json; charset=utf-8" ;
+        config.headers["Access-Control-Allow-Origin"] = "*";
+        config.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
+        config.headers["Access-Control-Allow-Headers"] = "Content-type";
+        config.headers["cache-control"] = "no-cache";
         return config
     },
     (error) => {
