@@ -1,27 +1,22 @@
 <template>
     <layout title="Administrar etiquetas">
-        <van-swipe-cell v-for="tag in tags" :key="tag">
-            <van-cell :border="true" :title="tag.name" />
-            <template #right>
-                <van-button square type="danger" text="Borrar" @click="deleteTag(tag)" />
-                <van-button square type="primary" text="Editar" @click="editTag(tag)" />
-            </template>
-        </van-swipe-cell>
+        <list-swipe-data :data="tags" @deleteItem="deleteTag" @editItem="editTag" />
 
-        <div class="btn-floating">
-            <van-button round icon="plus" type="success" @click="openShowModalAddTag"/>
-        </div>
+        <!-- button floating -->
+        <button-floating @open="openShowModalAddTag" />
 
         <!-- Dialog -->
-        <van-dialog v-model:show="showModalAddTag" title="Nueva etiqueta" :showConfirmButton="false" :close-on-click-overlay="true">
-            <van-form @submit.prevent="onSubmit">
+        <van-dialog v-model:show="showModalAddTag" :title="title" :showConfirmButton="false"
+            :close-on-click-overlay="true">
+            <van-form @submit.prevent="update" @keyup="form.clearErrors()">
                 <van-cell-group inset>
-                    <van-field v-model="form.name" name="nombre" label="Nombre" placeholder="Nombre" />
+                    <van-field v-model="form.name" name="nombre" label="Nombre" placeholder="Nombre"
+                        :error-message="form.errorMessage('name')" />
                 </van-cell-group>
                 <action-buttons>
                     <template #btn-submit>
-                        <button-submit @on-submit="onSubmit">
-                            crear
+                        <button-submit @on-submit="update">
+                            {{ textButton }}
                         </button-submit>
                     </template>
                 </action-buttons>
@@ -33,34 +28,66 @@
     </layout>
 </template>
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import layout from '../../layout/layout.vue';
 import { showDialog, showSuccessToast } from 'vant';
 import Form from '../../classes/Form';
 import actionButtons from '../../container/actionButtons.vue';
-import buttonSubmit from '../../components/buttonSubmit.vue';
+import buttonFloating from '../../components/buttonFloating.vue';
+import listSwipeData from '../../components/listSwipeData.vue';
+import TagsService from '../../services/TagsService';
 
 // data
 const form = reactive(new Form({
+    id: 0,
     name: '',
 }))
-const tags = reactive([
-    {
-        id: 1,
-        name: 'Rápido',
-    },
-]);
+let tags = ref([]);
 
 const showModalAddTag = ref(false);
 const successToast = ref(false);
+let title = ref("");
+let textButton = ref("");
+
+onMounted(() => {
+    getTags();
+});
 
 // metodos
-const onSubmit = () => {
-    console.log(form.data());
-    showModalAddTag.value = false;
+const getTags = () => {
+    TagsService.index()
+        .then((response) => {
+            tags.value = response.data.data;
+        }).catch(error => {
+            console.log(error)
+        });
+}
+const update = () => {
+    if (form.id == 0) {
+        TagsService.store(form.data())
+            .then(() => {
+                showModalAddTag.value = false;
+                getTags();
+            })
+            .catch(error => {
+                form.setErrors(error.response.data.errors);
+            })
+    } else {
+        TagsService.update(form.data())
+            .then(() => {
+                showModalAddTag.value = false;
+                getTags();
+            })
+            .catch(error => {
+                form.setErrors(error.response.data.errors);
+            })
+    }
 }
 const openShowModalAddTag = () => {
     showModalAddTag.value = true;
+    resetForm();
+    title.value = "Nueva Etiqueta";
+    textButton.value = "Crear";
 }
 const deleteTag = (tag) => {
     showDialog({
@@ -68,22 +95,37 @@ const deleteTag = (tag) => {
         message: 'Esta acción no podrá deshacerse',
         showCancelButton: true,
     }).then(() => {
-        // on close
-        console.log('delete', tag)
-        showSuccessToast('Eliminado');
+        TagsService.delete(tag.id)
+            .then(() => {
+                showSuccessToast('Eliminado');
+                getTags();
+            })
+            .catch(error => {
+                console.log(error)
+            });
     });
 }
 
 const editTag = (tag) => {
-    openShowModalAddTag();
-    console.log('edit', tag);
+    showModalAddTag.value = true;
+    resetForm();
+    title.value = "Editar etiqueta";
+    textButton.value = "Editar";
+    TagsService.show(tag.id)
+        .then(response => {
+            form.set(response.data.data)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+}
+
+// resetear el form y eliminar los errores
+const resetForm = () => {
+    form.id = 0;
+    form.name = '';
+    form.clearErrors();
 }
 </script>
-<style lang='scss' scoped>
-.btn-floating {
-    position: fixed;
-    right: 23px;
-    bottom: 23px;
-   
-}
+<style lang=''>
 </style>
