@@ -55,7 +55,7 @@ const { redirectPush } = usePush();
 const onSubmit = () => {
     AuthService.login(form.data()).then(response => {
         if (response.status == 200) {
-            redirectPush('profile');
+            redirectPush('recipes');
         }
     }).catch(error => {
         if (error.response.status == 401) {
