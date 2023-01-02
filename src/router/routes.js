@@ -91,6 +91,14 @@ const routes = [
                 },
             },
             {
+                path: "/tabbar/shopping-list/:id/products",
+                name: "products",
+                component: () => import("../pages/tabbar/shopping-list/products/index.vue"),
+                meta: {
+                    middleware: [auth,]
+                },
+            },
+            {
                 path: "/tabbar/calendar",
                 name: "calendar",
                 component: () => import("../pages/tabbar/calendar/index.vue"),
