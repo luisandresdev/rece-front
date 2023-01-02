@@ -67,6 +67,39 @@ const routes = [
             middleware: [auth,]
         },
     },
+    {
+        path: "/tabbar",
+        component: () => import("../pages/tabbar/index.vue"),
+        meta: {
+            middleware: [auth,]
+        },
+        children: [
+            {
+                path: "/tabbar/recipes",
+                name: "recipes",
+                component: () => import("../pages/tabbar/recipes/index.vue"),
+                meta: {
+                    middleware: [auth,]
+                },
+            },
+            {
+                path: "/tabbar/shopping-list",
+                name: "shopping-list",
+                component: () => import("../pages/tabbar/shopping-list/index.vue"),
+                meta: {
+                    middleware: [auth,]
+                },
+            },
+            {
+                path: "/tabbar/calendar",
+                name: "calendar",
+                component: () => import("../pages/tabbar/calendar/index.vue"),
+                meta: {
+                    middleware: [auth,]
+                },
+            },
+        ],
+    },
 ];
 
 export default routes;
