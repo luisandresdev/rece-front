@@ -1,6 +1,7 @@
 <template>
     <van-cell-group v-for="item in shoppingList" :key="item.id">
-        <van-cell is-link :title="item.name" @click="showActionSheetShoppingList(item)" :value="item.id" />
+        <van-cell is-link :title="item.name" @click="showActionSheetShoppingList(item)"
+            :value="item.products.length + '/' + item.products_count" />
         <van-action-sheet v-model:show="show" :actions="actions" @select="onSelectActions" cancel-text="Cancelar" />
     </van-cell-group>
 
@@ -103,7 +104,7 @@ const onSelectActions = (item) => {
             editShoppingList(item);
             break;
         case 'empty-shopping-list':
-            
+            emptyShoppingList(item);
             break;
         case 'delete':
             deleteShoppingList(item);
@@ -191,6 +192,28 @@ const deleteShoppingList = (shoppingList) => {
         ShoppingListService.delete(shoppingList.shoppingListId)
             .then(() => {
                 showSuccessToast('Eliminado');
+                getShoppingList();
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    });
+}
+
+/**
+ * Vaciar la lista de la compra
+ * @param {Object} shoppingList 
+ */
+const emptyShoppingList = (shoppingList) => {
+    showDialog({
+        title: '¿Está seguro?',
+        message: 'Esta acción no podrá deshacerse',
+        showCancelButton: true,
+        confirmButtonColor: '#15803d',
+    }).then(() => {
+        ShoppingListService.empty(shoppingList.shoppingListId)
+            .then(() => {
+                showSuccessToast('Vaciado');
                 getShoppingList();
             })
             .catch(error => {
