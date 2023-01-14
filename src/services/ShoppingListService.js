@@ -18,6 +18,9 @@ const ShoppingListService = {
     async delete(id) {
         return ApiService.delete(this.url + '/' + id);
     },
+    async empty(id) {
+        return ApiService.delete(this.url + '/' + id+ '/empty');
+    },
 }
 
 export default ShoppingListService;
