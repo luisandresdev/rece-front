@@ -1,30 +1,32 @@
 <template>
-    <van-cell-group v-for="item in shoppingList" :key="item.id">
-        <van-cell is-link :title="item.name" @click="showActionSheetShoppingList(item)"
-            :value="item.products.length + '/' + item.products_count" />
-        <van-action-sheet v-model:show="show" :actions="actions" @select="onSelectActions" cancel-text="Cancelar" />
-    </van-cell-group>
-
-    <!-- button floating -->
-    <button-floating :bottom="'4rem'" @open="openShowModalAddShoppingList" />
-
-    <!-- Dialog -->
-    <van-dialog v-model:show="showModalAddShoppingList" :title="title" :showConfirmButton="false"
-        :close-on-click-overlay="true">
-        <van-form @submit.prevent="update" @keyup="form.clearErrors()">
-            <van-cell-group inset>
-                <van-field v-model="form.name" name="nombre" label="Nombre" placeholder="Nombre"
-                    :error-message="form.errorMessage('name')" />
-            </van-cell-group>
-            <action-buttons>
-                <template #btn-submit>
-                    <button-submit @on-submit="update">
-                        {{ textButton }}
-                    </button-submit>
-                </template>
-            </action-buttons>
-        </van-form>
-    </van-dialog>
+    <Layout :title="'Lista de la compra'">
+        <van-cell-group v-for="item in shoppingList" :key="item.id">
+            <van-cell is-link :title="item.name" @click="showActionSheetShoppingList(item)"
+                :value="item.products.length + '/' + item.products_count" />
+            <van-action-sheet v-model:show="show" :actions="actions" @select="onSelectActions" cancel-text="Cancelar" />
+        </van-cell-group>
+    
+        <!-- button floating -->
+        <button-floating :bottom="'4rem'" @open="openShowModalAddShoppingList" />
+    
+        <!-- Dialog -->
+        <van-dialog v-model:show="showModalAddShoppingList" :title="title" :showConfirmButton="false"
+            :close-on-click-overlay="true">
+            <van-form @submit.prevent="update" @keyup="form.clearErrors()">
+                <van-cell-group inset>
+                    <van-field v-model="form.name" name="nombre" label="Nombre" placeholder="Nombre"
+                        :error-message="form.errorMessage('name')" />
+                </van-cell-group>
+                <action-buttons>
+                    <template #btn-submit>
+                        <button-submit @on-submit="update">
+                            {{ textButton }}
+                        </button-submit>
+                    </template>
+                </action-buttons>
+            </van-form>
+        </van-dialog>
+    </Layout>
 
     <!-- Toast -->
     <van-toast v-model:show="successToast" style="padding: 0" :duration="10"></van-toast>
@@ -37,6 +39,7 @@ import Form from '../../../classes/Form';
 import actionButtons from '../../../container/actionButtons.vue';
 import { useRouter } from 'vue-router';
 import ShoppingListService from "../../../services/ShoppingListService";
+import Layout from '../../../layout/layout.vue';
 
 // data
 const show = ref(false);
