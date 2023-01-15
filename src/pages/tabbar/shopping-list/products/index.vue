@@ -1,30 +1,57 @@
 <template>
-    <van-form @submit.prevent="update" @keyup="form.clearErrors()">
-        <van-cell-group>
-            <van-field v-model="form.name" placeholder="Añadir producto" :error-message="form.errorMessage('name')">
-                <template #button>
-                    <van-button size="small" :icon="actionIcon.icon" :color="actionIcon.color"
-                        @click="update"></van-button>
-                </template>
-            </van-field>
-        </van-cell-group>
-    </van-form>
-    <van-cell-group v-for="product in products" :key="product.id">
-        <div class="custom-cell-group">
-            <div style="margin-left:5px;margin-top:-1px ;">
-                <van-checkbox v-model="product.completed" checked-color="#4c1d95" icon-size="15px"
-                    @click="completedProduct(product)"></van-checkbox>
-            </div>
-            <div style="width:100%">
-                <van-cell :title="product.name" :is-link="product.completed ? false : true"
-                    :title-style="product.completed ? 'text-decoration: line-through !important' : ''"
-                    @click="showActionSheetProduct(product)">
-                </van-cell>
-                <van-action-sheet v-model:show="show" :actions="actions" @select="onSelectActions"
-                    cancel-text="Cancelar" />
-            </div>
-        </div>
-    </van-cell-group>
+    <!-- TODO: no funcion vuelement login -->
+    <layout :title="title + ' / Productos'">
+
+        <van-form @submit.prevent="update" @keyup="form.clearErrors()">
+            <van-cell-group>
+                <van-field v-model="form.name" placeholder="Añadir producto" :error-message="form.errorMessage('name')">
+                    <template #button>
+                        <van-button size="small" :icon="actionIcon.icon" :color="actionIcon.color"
+                            @click="update"></van-button>
+                    </template>
+                </van-field>
+            </van-cell-group>
+        </van-form>
+        <van-tabs v-model:active="activeName" :color="'#4c1d95'" :sticky="true">
+            <van-tab :title="'Sin completar'" name="not completed">
+                <van-cell-group v-for="product in products" :key="product.id">
+                    <div class="custom-cell-group">
+                        <div style="margin-left:5px;margin-top:-1px ;">
+                            <van-checkbox v-model="product.completed" checked-color="#4c1d95" icon-size="15px"
+                                @click="completedProduct(product)"></van-checkbox>
+                        </div>
+                        <div style="width:100%">
+                            <van-cell :title="product.name" :is-link="product.completed ? false : true"
+                                :title-style="product.completed ? 'text-decoration: line-through !important' : ''"
+                                @click="showActionSheetProduct(product)">
+                            </van-cell>
+                            <van-action-sheet v-model:show="show" :actions="actions" @select="onSelectActions"
+                                cancel-text="Cancelar" />
+                        </div>
+                    </div>
+                </van-cell-group>
+            </van-tab>
+            <van-tab :title="'Completados'" name="completed">
+                <van-cell-group v-for="product in products_completed" :key="product.id">
+                    <div class="custom-cell-group">
+                        <div style="margin-left:5px;margin-top:-1px ;">
+                            <van-checkbox v-model="product.completed" checked-color="#4c1d95" icon-size="15px"
+                                @click="completedProduct(product)"></van-checkbox>
+                        </div>
+                        <div style="width:100%">
+                            <van-cell :title="product.name" is-link
+                                :title-style="product.completed ? 'text-decoration: line-through !important' : ''"
+                                @click="showActionSheetProduct(product)">
+                            </van-cell>
+                            <van-action-sheet v-model:show="show" :actions="actions_completed" @select="onSelectActions"
+                                cancel-text="Cancelar" />
+                        </div>
+                    </div>
+                </van-cell-group>
+            </van-tab>
+        </van-tabs>
+    </layout>
+
 
     <van-toast v-model:show="successToast" style="padding: 0" :duration="10"></van-toast>
 </template>
@@ -34,6 +61,8 @@ import Form from '../../../../classes/Form';
 import ProductService from '../../../../services/ProductService';
 import { useRoute } from 'vue-router';
 import { showDialog, showSuccessToast } from 'vant';
+import layout from '../../../../layout/layout.vue';
+import ShoppingListService from '../../../../services/ShoppingListService';
 
 
 
@@ -45,12 +74,16 @@ const form = reactive(new Form({
     shopping_list_id: route.params.id,
 }));
 let products = ref([]);
+let products_completed = ref([]);
 const show = ref(false);
 const successToast = ref(false);
 const actionIcon = reactive({
     icon: "plus",
     color: "#14532d"
-})
+});
+let title = ref("");
+
+
 
 // acciones del van-action-sheet
 const actions = [
@@ -59,13 +92,31 @@ const actions = [
     { name: 'Borrar', color: '#7f1d1d', path: 'delete' },
 ];
 
+const actions_completed = [
+    { name: 'Borrar', color: '#7f1d1d', path: 'delete' },
+];
+
+const activeName = ref('not completed');
+
 // ciclo de vida
 onMounted(() => {
-    getProducts();
+    getShoppingList();
 });
 
 // methods
 
+
+const getShoppingList = () => {
+    ShoppingListService.show(route.params.id)
+        .then(response => {
+            let data = response.data.data;
+            title.value = data.name;
+            getProducts();
+        })
+        .catch(error => {
+            console.log(error)
+        })
+}
 /**
  * Obtener las listas de la compra.
  */
@@ -75,7 +126,13 @@ const getProducts = () => {
     }
     ProductService.index(context)
         .then((response) => {
-            products.value = response.data.data;
+            let data = response.data.data;
+            products.value = data.filter(product => {
+                return product.completed == false;
+            });
+            products_completed.value = data.filter(product => {
+                return product.completed == true;
+            })
         }).catch(error => {
             console.log(error)
         });
@@ -114,6 +171,9 @@ const update = () => {
 const showActionSheetProduct = (item) => {
     show.value = true;
     actions.forEach(element => {
+        element.product = item;
+    });
+    actions_completed.forEach(element => {
         element.product = item;
     });
 };
