@@ -15,6 +15,7 @@
     "v-calendar": "^3.0.0-alpha.8",
     "vant": "^4.0.0",
     "vue": "^3.2.41",
+    "vue-element-loading": "^3.0.1",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
