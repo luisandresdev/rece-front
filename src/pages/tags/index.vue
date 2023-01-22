@@ -1,6 +1,8 @@
 <template>
     <layout title="Administrar etiquetas">
-        <list-swipe-data :data="tags" @deleteItem="deleteTag" @editItem="editTag" />
+        <div style="margin-top: 2.8rem;">
+            <list-swipe-data :data="tags" @deleteItem="deleteTag" @editItem="editTag" />        
+        </div>
 
         <!-- button floating -->
         <button-floating @open="openShowModalAddTag" />

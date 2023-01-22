@@ -1,6 +1,8 @@
 <template>
     <layout title="Administrar categorías">
-        <list-swipe-data :data="categories" @deleteItem="deleteCategory" @editItem="editCategory" />
+        <div style="margin-top: 2.8rem;">
+            <list-swipe-data :data="categories" @deleteItem="deleteCategory" @editItem="editCategory" />
+        </div>
 
         <!-- button floating -->
         <button-floating @open="openShowModalAddCategorie" />
